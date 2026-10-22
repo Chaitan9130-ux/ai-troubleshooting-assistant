@@ -1,6 +1,6 @@
 # Ten-minute presentation outline
 
-This is a slide content outline and speaking guide, not a PowerPoint deck. Replace test-result placeholders with the verified results in TEST_RESULTS.md. Present this milestone honestly as an offline retrieval baseline.
+This is a slide content outline and speaking guide, not a PowerPoint deck. Replace test-result placeholders with the verified results in TEST_RESULTS.md. Present the Gemini integration honestly: mock tests pass, but a real provider check remains pending until a key is configured.
 
 ## Slide 1 Problem and objective — 1 minute
 
@@ -8,7 +8,7 @@ L1/L2 engineers spend time searching repeated symptoms. The prototype retrieves 
 
 ## Slide 2 Architecture — 1 minute
 
-Show this flow: Streamlit input → TF-IDF retrieval → evidence gate → fixed response formatter → source-backed guidance. JSON supplies the index and answer content. No LLM is connected in this milestone.
+Show this flow: Streamlit input → TF-IDF retrieval → evidence gate → optional Gemini structured output → source validation → assessment with source-backed guidance, or fallback. JSON supplies the index and authoritative action fields.
 
 ## Slide 3 Knowledge base and retrieval — 1 minute
 
@@ -22,13 +22,14 @@ Show this flow: Streamlit input → TF-IDF retrieval → evidence gate → fixed
 4. Expand KB-001 and compare its checks with the response.
 5. Submit `The service is down`. Explain why more context is needed.
 6. Submit `My keyboard is broken`. Show the insufficient-evidence response.
-7. Download notes if time permits.
+7. Select Gemini + sources and show a real generated assessment only after a key has been privately configured and verified. Otherwise demonstrate the labeled no-key fallback.
+8. Download notes if time permits.
 
 Backup: keep the app running and use README examples if live input is interrupted. Record a demo yourself before submission; no recording is included in this project.
 
 ## Slide 5 Testing — 1 minute
 
-Show actual pytest results from TEST_RESULTS.md. Explain coverage of all 15 runbooks, unknown inputs, near ties, source fidelity, and UI interaction. Distinguish a small regression suite from evidence of real-world accuracy.
+Show the 52 passing tests from TEST_RESULTS.md, distinguishing mocked Gemini tests from live API verification. Explain coverage of all 15 runbooks, unknown inputs, near ties, source fidelity, and UI interaction. Distinguish a small regression suite from evidence of real-world accuracy.
 
 ## Slide 6 Limitations and safeguards — 1 minute
 
@@ -36,13 +37,13 @@ Lexical retrieval can miss synonyms or misunderstand negation. Thresholds are he
 
 ## Slide 7 Next phase and contribution — 2 minutes
 
-Next: add grounded LLM phrasing, structured output validation, timeout fallback, and a larger independently written evaluation set. Explain the gap between this baseline and the assignment's AI formulation requirement. Disclose Codex assistance and your actual review, modifications, and testing.
+Gemini phrasing, structured output validation, and fallback are implemented. Next: verify a real key and assess generated narrative using a larger independently written evaluation set. Disclose Codex assistance and your actual review, modifications, and testing.
 
 ## Q and A preparation
 
 - Why TF-IDF? Small corpus, transparent ranking, quick local setup; limited semantic recall.
-- Why no LLM yet? Establish a testable retrieval baseline first; adding one remains a submission task.
-- What prevents invented fixes? Current responses copy vetted source fields; no generative model runs.
+- Is Gemini working live? Integration and mocked tests are complete; claim live readiness only after verifying a real request.
+- What prevents invented fixes? Action fields must match the source exactly or the generated result is discarded. The separate generated assessment still requires human review.
 - Why these thresholds? Prototype defaults tested on a small suite; require separate evaluation to calibrate.
 - What if documentation is wrong? Grounding is not correctness; owners must review and version runbooks.
 - What would production require? Access controls, redaction, auditability, source ownership, broader evaluation, operational monitoring, and a controlled remediation workflow.

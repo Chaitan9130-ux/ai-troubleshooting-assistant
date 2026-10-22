@@ -1,12 +1,14 @@
 # AI Troubleshooting Assistant for L1 and L2 Support
 
-A local prototype that retrieves simulated support runbooks and presents ordered checks, conditional resolutions, escalation teams, and visible sources. It asks for more information when evidence is weak or ambiguous.
+Retrieve simulated runbooks and optionally ask Gemini to formulate a tentative assessment. Unsupported or ambiguous issues receive clarification rather than an invented fix.
+
+Live app: https://chaitan-ai-troubleshooting-assistant.streamlit.app/
 
 ## Current milestone
 
-The offline baseline is implemented. It uses TF-IDF and a deterministic response formatter, **not an LLM**. This follows the supplied phased approach, but the assignment's AI-formulated response requirement still needs an LLM integration before final submission. Do not describe the baseline as a completed generative AI application.
+Gemini integration is implemented using Google's generateContent REST API with structured JSON output. No real key has been supplied yet, so live authentication, model access, latency, and answer quality remain unverified. Source-only mode works without a key. A configured key is not proof of a working connection: generated mode appears only after a successful validated response.
 
-## Setup on Windows PowerShell
+## Local setup on Windows PowerShell
 
 Requires Python 3.11–3.13. Open a terminal in this folder.
 
@@ -16,33 +18,49 @@ python -m venv .venv
 .\.venv\Scripts\python.exe -m streamlit run app.py --server.address 127.0.0.1
 ```
 
-Activation is optional; these commands use the environment directly. If Python's bundled pip bootstrap fails and you already have uv installed:
+If Python's bundled pip bootstrap fails and you already have uv installed:
 
 ```powershell
 uv venv .venv
 uv pip install --python .venv/Scripts/python.exe -r requirements.txt
 ```
 
-Open the local URL printed by Streamlit. Stop the server with Ctrl+C. No API key, production access, or model downloads are needed. Package installation needs internet access; normal application operation is local. Streamlit's optional usage telemetry can be disabled with `--browser.gatherUsageStats false`.
+Open the local URL printed by Streamlit; stop with Ctrl+C. Source-only mode needs no API key. Gemini mode needs internet access and a Gemini key. The REST adapter uses Python's standard library; no Gemini SDK dependency is required.
+
+## Configure Gemini privately
+
+Do not paste real keys in chat, source files, the example file, or GitHub.
+
+Locally, create `.streamlit/secrets.toml`, copy `secrets.example.toml` into it, and replace the placeholder privately there. The real secrets file is excluded from Git and the source ZIP. Alternatively set `GEMINI_API_KEY` and optionally `GEMINI_MODEL` in the server environment; environment values take priority over Streamlit secrets.
+
+For the hosted app, open **Manage app → Settings → Secrets**, paste the example settings, replace the placeholder privately with your key, and save. No secret belongs in the public interface.
+
+The default model is `gemini-3.8-flash`, as shown in Google's documentation when this phase was implemented. Set `GEMINI_MODEL` to another model available to your key if needed; it must support generateContent structured output. Unsupported models fall back rather than silently switching providers.
+
+Choose **Gemini + sources**, submit `The payment API is returning a 500 error`, and confirm the response says **Gemini assessment + verified source guidance**. A fallback message means Gemini was not used successfully. This mode sends your submitted description and the selected simulated runbook to Google. Do not submit credentials or private support data.
+
+## Architecture and grounding
+
+Description → TF-IDF retrieval → evidence gate → optional Gemini request → validation → assessment and authoritative runbook fields, or a labeled source-only fallback.
+
+The 15-entry JSON knowledge base contains IDs, symptoms, keywords, ordered checks, conditional resolutions, escalation teams, and sources. TF-IDF indexes title/symptom/keyword unigrams and bigrams. The minimum cosine similarity is 0.20; eligible top results within 0.06 trigger clarification, as do short generic descriptions. These are prototype heuristics, not calibrated diagnosis probabilities. Restart the app or clear Streamlit's cache after changing the knowledge base.
+
+Gemini runs only for a matched entry, a configured key, and selected Gemini mode. Unknown, ambiguous, empty, and overlong queries bypass the API. The system instruction treats input as data and asks for a tentative assessment with no new actions, plus exact copies of source guidance. JSON Schema constrains structure; application code independently checks the source ID, all checks in order, resolution, and escalation team. Any changed action field, unsupported source, refusal, incomplete response, malformed JSON, or provider/network error triggers fallback. Authoritative actions are rendered from the original runbook.
+
+The assessment is generated prose whose semantic grounding cannot be mechanically verified by these checks. It is displayed separately as plain text and labeled for verification. Prompt instructions reduce unsupported claims but do not guarantee their absence. The assessment is not a confirmed diagnosis.
+
+Requests use a key header, a fixed HTTPS Google endpoint, no redirects, a 20-second socket timeout, a 64 KB response-read cap, and a 2,048-token output limit. The socket timeout is not a strict total wall-clock deadline. There are no automatic retries. Form submissions trigger calls; session state reuses answers on rerenders. A 20-second per-session cooldown reduces accidental repeated calls, but is not a global spending limit or protection against new visitor sessions. Requests consume the configured owner's API quota. This is a public prototype, not a production service.
 
 ## Project map
 
-- `app.py`: Streamlit form, result display, source expansion, and notes download.
-- `knowledge_base.json`: 15 simulated runbooks; no production tickets or credentials.
-- `retrieval.py`: schema checks, TF-IDF indexing, similarity ranking, and abstention.
-- `responses.py`: evidence-only formatting, retaining the source's diagnostic order.
-- `tests/`: retrieval, validation, grounding, and Streamlit interaction tests.
-- `presentation/`: seven-slide outline, demonstration script, and interview questions.
-
-## Architecture and reasoning
-
-User description → TF-IDF query vector → cosine similarity against runbook symptoms → evidence gate → formatted answer or clarification → visible source.
-
-The search index includes titles, symptoms, and keyword aliases. It intentionally excludes resolution text to reduce matches caused by unrelated remediation vocabulary. English stop words are removed; unigrams and bigrams capture both words and phrases. No model is trained. TF-IDF is a classical information-retrieval technique, not semantic reasoning.
-
-Default similarity threshold: 0.20. If no entry clears it, no fix is returned. If the top two eligible entries differ by less than 0.06, the app requests clarification and shows candidates without resolutions. Short generic queries also trigger clarification. Scores are lexical similarity, not calibrated confidence. Defaults are prototype heuristics checked on the included cases, not validated operating thresholds.
-
-For a match, the formatter copies the selected source's checks, conditional resolution, and escalation team. A matching symptom does not establish a confirmed root cause. No remediation is executed. Ambiguous and unsupported inputs do not produce a resolution.
+- `app.py`: mode selection, private server configuration, form, sources, and notes download.
+- `retrieval.py`: knowledge-base validation, TF-IDF ranking, and abstention.
+- `knowledge_base.json`: 15 simulated runbooks.
+- `responses.py`: deterministic source formatting and fallback.
+- `gemini.py`: REST request, prompt/schema, validation, and sanitized errors.
+- `secrets.example.toml`: placeholder settings only.
+- `tests/`: retrieval, Gemini mock/transport, and Streamlit interaction tests.
+- `presentation/`: seven-slide outline and demo/Q&A script.
 
 ## Testing
 
@@ -50,30 +68,19 @@ For a match, the formatter copies the selected source's checks, conditional reso
 .\.venv\Scripts\python.exe -m pytest tests -v
 ```
 
-The tests cover every runbook, paraphrases, unrelated queries, generic symptoms, near-tied retrieval, malformed data, input limits, source identity, check order, and attempts to override the fixed formatter. Streamlit AppTest exercises form submission, repeated queries, empty input, and example selection. See `TEST_RESULTS.md` for the actual verified run.
+See TEST_RESULTS.md for actual runs. Tests use dummy keys and mocked transport; they never call Google. They cover retrieval, abstention, source fidelity, altered actions and invalid sources, malformed/truncated output, timeout/quota handling, secret-safe errors, no-key fallback, UI modes, session reuse, and cooldown.
 
-Manual demonstration: submit a payment API 500 query, expand KB-001, inspect checks and escalation, try `The service is down`, then `My keyboard is broken`. Verify no fix is presented for unsupported input. Download investigation notes. See the presentation folder for the full script.
+Before claiming live Gemini readiness, configure the key privately and verify a real generated assessment, visible sources, clarification behavior, and authentication/quota fallback. Passing mock tests does not establish real model quality or retrieval accuracy.
 
-## Assumptions and limitations
+## Limitations and contribution
 
-- Small, curated English sample corpus; all runbooks are simulated.
-- No live logs, metrics, service inspection, ticket creation, or account actions.
-- Word overlap can miss paraphrases and can match unrelated text containing familiar technical terms. Contradictions and negation are not understood reliably.
-- Clarification is single-turn; include the original symptom when resubmitting with more context.
-- Multiple simultaneous issues should be submitted separately.
-- The tiny regression set cannot establish general retrieval accuracy or production safety.
-- Fixed formatting prevents generated factual additions, but incorrect source material still yields incorrect guidance.
-- A future LLM introduces new risks, costs, network requirements, and failure modes that the offline tests do not evaluate.
+All support data is simulated. There is no system inspection, remediation, ticket creation, account action, multi-turn memory, or access control. Lexical retrieval can miss synonyms and misunderstand negation, contradictions, or multiple issues. Wrong documentation can still yield wrong guidance. Generated prose requires human review.
 
-## Next phase: grounded LLM integration
+The initial code, data, Gemini integration, tests, and documentation were generated with Codex assistance. Review and test the project yourself, and describe only your actual contribution when presenting. Real Gemini execution is still pending the key.
 
-Only call the model after a successful evidence gate. Supply the selected source as data, ask for structured output, require its ID, preserve conditional language, and validate returned source references. Keep retrieved source text visible. On API timeout, malformed output, or unsupported references, fall back to the labeled offline response. Test invented fixes, prompt injection, negation, ambiguity, and API failures. Source-ID validation alone does not prove generated statements are grounded; review or constrain individual steps as well.
+## References
 
-## Contribution disclosure
-
-This initial code, simulated records, tests, and documentation were generated with Codex assistance. Before presenting, review and modify them, run the tests yourself, and describe only the work you actually performed. No generative model runs inside the current app. Record any later model/provider and prompt changes here.
-
-## Reference documentation
-
+- [Gemini generateContent API](https://ai.google.dev/api/generate-content)
+- [Gemini structured output](https://ai.google.dev/gemini-api/docs/structured-output)
 - [Streamlit forms](https://docs.streamlit.io/develop/api-reference/execution-flow/st.form)
 - [scikit-learn text feature extraction](https://scikit-learn.org/stable/modules/feature_extraction.html#text-feature-extraction)

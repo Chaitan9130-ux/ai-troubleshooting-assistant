@@ -26,9 +26,9 @@ Read app.py. The cached retriever avoids rebuilding the index on every interacti
 
 Run pytest as shown in the README. Read test_retrieval.py and test_app.py. Add an independently worded query and one misleading query; inspect failures before changing thresholds. Milestone: report actual results and at least one limitation.
 
-## Phase 7 Add generative AI before final submission
+## Phase 7 Configure and verify Gemini
 
-The baseline is not the complete AI formulation requirement. Integrate a model only after the evidence gate, label the chosen mode, validate sources and supported steps, and retain a deterministic fallback for provider failures. Add tests for timeout and unsupported generated claims. Milestone: demonstrate a real model response grounded in visible source material.
+Read gemini.py and its tests. Gemini integration is implemented behind the evidence gate, with structured output, source-field validation, and fallback. Store a real key privately using the README instructions. Select Gemini mode, then verify a real generated assessment and its source. The generated prose still requires human review. Milestone: demonstrate a real successful Gemini response; mock tests alone do not complete this milestone.
 
 ## Phase 8 Prepare to present
 

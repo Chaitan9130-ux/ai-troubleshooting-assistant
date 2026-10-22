@@ -1,5 +1,15 @@
 # Verified baseline results
 
+## Gemini integration regression run
+
+22 October 2026: **52 passed in 5.35 seconds**, exit code 0, using Python 3.13.13. Gemini tests used dummy credentials and mocked transport only. No real provider request was made.
+
+The additional 22 cases cover valid structured generation, evidence gating, missing keys, invalid model configuration, unsupported sources and changed guidance, invalid assessments, malformed/blocked/truncated responses, timeouts, sanitized HTTP errors, bounded transport and redirect handling, UI fallback, stored responses, and cooldown behavior.
+
+Live Gemini authentication, account quota, selected-model availability, semantic answer quality, and real provider latency remain unverified until a key is configured.
+
+## Original baseline run
+
 Run date: 22 October 2026. Windows, Python 3.13.13, Streamlit 1.50.0, scikit-learn 1.8.0, pytest 8.4.2.
 
 Result: **30 passed in 4.33 seconds**, exit code 0.

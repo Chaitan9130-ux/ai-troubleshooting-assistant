@@ -1,0 +1,348 @@
+[
+  {
+    "id": "KB-001",
+    "title": "Payment API returns HTTP 500",
+    "symptoms": [
+      "Payment requests fail with Internal Server Error",
+      "Checkout payment service gives a 500 error"
+    ],
+    "keywords": [
+      "payment",
+      "checkout",
+      "500",
+      "internal server error"
+    ],
+    "diagnostic_checks": [
+      "Capture the failed request ID and timestamp without payment details.",
+      "Review application logs for the correlated exception.",
+      "Check payment dependencies and connection pool health.",
+      "Compare the start of failures with recent deployments."
+    ],
+    "resolution": "If logs identify a failing dependency, restore that dependency using its approved runbook. If a deployment regression is confirmed, request an approved rollback. HTTP 500 alone does not establish a root cause.",
+    "escalation_team": "Application Support",
+    "source": "Simulated support runbook KB-001"
+  },
+  {
+    "id": "KB-002",
+    "title": "Database connection failure",
+    "symptoms": [
+      "Cannot connect to the database",
+      "SQL connection refused or connection timeout"
+    ],
+    "keywords": [
+      "database",
+      "db",
+      "sql",
+      "connection refused",
+      "cannot connect"
+    ],
+    "diagnostic_checks": [
+      "Record the exact database connection error and affected service.",
+      "Check database availability and the configured host and port.",
+      "Verify network reachability from the application environment.",
+      "Check credential validity through the approved secret manager without exposing secrets."
+    ],
+    "resolution": "Correct a verified host or port mismatch through the approved configuration process. Route network, database availability, or credential failures to the responsible owner after confirming the error.",
+    "escalation_team": "Database Operations",
+    "source": "Simulated support runbook KB-002"
+  },
+  {
+    "id": "KB-003",
+    "title": "Application pages load slowly",
+    "symptoms": [
+      "The application takes too long to load",
+      "Pages are slow and response latency is high"
+    ],
+    "keywords": [
+      "slow",
+      "latency",
+      "performance",
+      "pages",
+      "takes too long",
+      "load"
+    ],
+    "diagnostic_checks": [
+      "Measure response times and identify affected endpoints.",
+      "Compare application CPU, memory, and dependency latency with the normal baseline.",
+      "Inspect slow request traces and slow database queries.",
+      "Check whether traffic or a recent release changed."
+    ],
+    "resolution": "Address a measured bottleneck through its owning team. Request a reviewed query or capacity change only when the metrics support it.",
+    "escalation_team": "Application Performance Team",
+    "source": "Simulated support runbook KB-003"
+  },
+  {
+    "id": "KB-004",
+    "title": "Login fails with invalid credentials",
+    "symptoms": [
+      "Users cannot log in",
+      "Authentication failed or invalid username password"
+    ],
+    "keywords": [
+      "login",
+      "log in",
+      "signin",
+      "authentication",
+      "invalid credentials",
+      "password"
+    ],
+    "diagnostic_checks": [
+      "Record the exact login error without recording the password.",
+      "Determine whether one account or all accounts are affected.",
+      "Check account lock status and identity provider health.",
+      "Confirm the user is using the intended environment."
+    ],
+    "resolution": "If an account lock or expired credential is confirmed, use the approved account recovery process. For widespread failures, escalate identity provider evidence.",
+    "escalation_team": "Identity and Access Management",
+    "source": "Simulated support runbook KB-004"
+  },
+  {
+    "id": "KB-005",
+    "title": "Disk space running low",
+    "symptoms": [
+      "No space left on device",
+      "Disk is full and writes fail"
+    ],
+    "keywords": [
+      "disk",
+      "storage",
+      "space",
+      "full",
+      "filesystem"
+    ],
+    "diagnostic_checks": [
+      "Identify the affected filesystem and available capacity.",
+      "Inspect directory usage and log growth using approved read-only tools.",
+      "Check retention settings and whether files are still in use."
+    ],
+    "resolution": "Request approved log rotation, retention cleanup, or storage expansion after identifying the source of growth. Do not delete unknown or active application files.",
+    "escalation_team": "Infrastructure Operations",
+    "source": "Simulated support runbook KB-005"
+  },
+  {
+    "id": "KB-006",
+    "title": "Service unavailable HTTP 503",
+    "symptoms": [
+      "Service is down with 503 Service Unavailable",
+      "Backend has no healthy instances"
+    ],
+    "keywords": [
+      "503",
+      "unavailable",
+      "down",
+      "healthy backends"
+    ],
+    "diagnostic_checks": [
+      "Confirm the affected service and exact HTTP status.",
+      "Inspect health checks and backend instance availability.",
+      "Check load balancer routing and recent deployments."
+    ],
+    "resolution": "If health-check or routing configuration is confirmed incorrect, request its correction. If no instances are healthy, escalate logs and health-check results to the service owner.",
+    "escalation_team": "Platform Operations",
+    "source": "Simulated support runbook KB-006"
+  },
+  {
+    "id": "KB-007",
+    "title": "Network connectivity timeout",
+    "symptoms": [
+      "Host unreachable",
+      "Network connection timed out between servers"
+    ],
+    "keywords": [
+      "network",
+      "connectivity",
+      "unreachable",
+      "packet loss",
+      "timed out"
+    ],
+    "diagnostic_checks": [
+      "Record source, destination, port, and failure time.",
+      "Compare reachability from an approved test location.",
+      "Review route and firewall changes with the network owner."
+    ],
+    "resolution": "Have the network team correct a verified route or firewall problem through change control. A timeout alone cannot identify the faulty component.",
+    "escalation_team": "Network Operations",
+    "source": "Simulated support runbook KB-007"
+  },
+  {
+    "id": "KB-008",
+    "title": "Scheduled batch job failed",
+    "symptoms": [
+      "Nightly scheduled job did not complete",
+      "Cron batch task failed"
+    ],
+    "keywords": [
+      "scheduled",
+      "batch",
+      "job",
+      "cron",
+      "nightly"
+    ],
+    "diagnostic_checks": [
+      "Inspect scheduler status and the last execution log.",
+      "Check input availability, exit code, and runtime permissions.",
+      "Determine whether a previous run partially processed records."
+    ],
+    "resolution": "After fixing a confirmed prerequisite failure, rerun only with the job owner's approval and verified duplicate-processing safeguards.",
+    "escalation_team": "Batch Operations",
+    "source": "Simulated support runbook KB-008"
+  },
+  {
+    "id": "KB-009",
+    "title": "Invalid application configuration",
+    "symptoms": [
+      "Application startup fails after configuration change",
+      "Missing environment variable or invalid config"
+    ],
+    "keywords": [
+      "configuration",
+      "config",
+      "environment variable",
+      "startup"
+    ],
+    "diagnostic_checks": [
+      "Capture the startup validation error without secret values.",
+      "Compare required variable names with the deployment specification.",
+      "Review recent configuration changes and the intended environment."
+    ],
+    "resolution": "Correct the verified missing or invalid setting using the approved deployment workflow. Request a restart only if the service's runbook requires it.",
+    "escalation_team": "Application Support",
+    "source": "Simulated support runbook KB-009"
+  },
+  {
+    "id": "KB-010",
+    "title": "High CPU utilization",
+    "symptoms": [
+      "CPU usage stays at 100 percent",
+      "Processor saturation on application host"
+    ],
+    "keywords": [
+      "cpu",
+      "processor",
+      "100",
+      "saturation"
+    ],
+    "diagnostic_checks": [
+      "Confirm sustained CPU usage rather than a brief spike.",
+      "Identify the process using CPU and correlate it with request volume.",
+      "Inspect approved profiling data and recent releases."
+    ],
+    "resolution": "Escalate evidence of a hot process or workload spike. Use reviewed scaling or code changes after the bottleneck is established; do not kill processes solely from CPU usage.",
+    "escalation_team": "Infrastructure Operations",
+    "source": "Simulated support runbook KB-010"
+  },
+  {
+    "id": "KB-011",
+    "title": "Memory exhaustion or OOM termination",
+    "symptoms": [
+      "Container killed due to out of memory",
+      "OOMKilled process or memory usage increasing"
+    ],
+    "keywords": [
+      "memory",
+      "oom",
+      "oomkilled",
+      "leak",
+      "ram"
+    ],
+    "diagnostic_checks": [
+      "Inspect termination reason and memory usage history.",
+      "Compare configured limits with baseline consumption.",
+      "Check workload growth and recent deployments."
+    ],
+    "resolution": "If a limit mismatch is confirmed, request an approved capacity adjustment. If memory grows continuously, route profiling evidence to the application owner for leak investigation.",
+    "escalation_team": "Application Support",
+    "source": "Simulated support runbook KB-011"
+  },
+  {
+    "id": "KB-012",
+    "title": "TLS certificate expired",
+    "symptoms": [
+      "HTTPS certificate has expired",
+      "SSL certificate validation fails"
+    ],
+    "keywords": [
+      "tls",
+      "ssl",
+      "certificate",
+      "expired",
+      "https"
+    ],
+    "diagnostic_checks": [
+      "Inspect certificate validity dates and hostname from an approved client.",
+      "Check the certificate chain and the client's system time.",
+      "Confirm which endpoint terminates TLS."
+    ],
+    "resolution": "If expiry is confirmed, have the certificate owner renew and deploy the correct certificate and chain. Do not disable TLS validation.",
+    "escalation_team": "Security Operations",
+    "source": "Simulated support runbook KB-012"
+  },
+  {
+    "id": "KB-013",
+    "title": "API rate limit HTTP 429",
+    "symptoms": [
+      "Too many requests response",
+      "API returns HTTP 429"
+    ],
+    "keywords": [
+      "429",
+      "rate limit",
+      "too many requests",
+      "throttled"
+    ],
+    "diagnostic_checks": [
+      "Capture response status and any Retry-After header.",
+      "Compare request volume with the documented client quota.",
+      "Check whether retries are amplifying traffic."
+    ],
+    "resolution": "For confirmed quota exhaustion, respect Retry-After and request an approved bounded retry policy. Discuss quota changes with the API owner if normal demand exceeds the allowance.",
+    "escalation_team": "API Platform Team",
+    "source": "Simulated support runbook KB-013"
+  },
+  {
+    "id": "KB-014",
+    "title": "DNS name resolution failure",
+    "symptoms": [
+      "Could not resolve hostname",
+      "DNS NXDOMAIN or name resolution failed"
+    ],
+    "keywords": [
+      "dns",
+      "hostname",
+      "resolve",
+      "nxdomain",
+      "name resolution"
+    ],
+    "diagnostic_checks": [
+      "Record the exact hostname and resolver error.",
+      "Check the configured resolver and the expected DNS record.",
+      "Compare resolution from the affected environment and an approved reference environment."
+    ],
+    "resolution": "Request correction of a verified DNS record or resolver configuration through the DNS owner. Do not replace names with hard-coded addresses as a general fix.",
+    "escalation_team": "Network Operations",
+    "source": "Simulated support runbook KB-014"
+  },
+  {
+    "id": "KB-015",
+    "title": "Access denied HTTP 403",
+    "symptoms": [
+      "Authenticated user receives forbidden response",
+      "API returns HTTP 403 access denied"
+    ],
+    "keywords": [
+      "403",
+      "forbidden",
+      "authorization",
+      "permission",
+      "access denied"
+    ],
+    "diagnostic_checks": [
+      "Confirm the exact resource, authenticated identity, and HTTP status.",
+      "Compare assigned roles with the resource's documented access policy.",
+      "Check recent role or policy changes."
+    ],
+    "resolution": "Request a least-privilege access correction only when the resource owner confirms authorization is appropriate. Do not bypass the access policy.",
+    "escalation_team": "Identity and Access Management",
+    "source": "Simulated support runbook KB-015"
+  }
+]
